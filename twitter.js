@@ -5,11 +5,10 @@ const path = require('path');
 const request = require('request');
 const URL = require('url');
 const util = require('util');
-
+const ws = require('ws').Server;
 const tw = require('./twkey.js');
 
 // search word
-// const query = '#ハウステンボス filter:images exclude:retweets';
 const query = process.argv[2] + ' filter:images exclude:retweets';
 
 // create directory
@@ -31,7 +30,11 @@ function createDir(dir) {
 // get tweets
 function getTweetImg(word) {
   return new Promise((resolve, reject) => {
-    tw.get('search/tweets.json', {q: word, include_entities: 'true', tweet_mode: 'extended'}, function(error, tweets, response) {
+    tw.get('search/tweets.json', {
+      q: word,
+      include_entities: 'true',
+      tweet_mode: 'extended'
+    }, function(error, tweets, response) {
       if (!error) {
         const dataList = {};
         for (const i in tweets.statuses) {
@@ -49,17 +52,32 @@ function getTweetImg(word) {
   })
 }
 
-getTweetImg(query)
-  .then(function(data) {
-      const dir = createDir('img');
-      for (const i in Object.keys(data)) {
-        const url = data[i].url;
-//        const name = URL.parse(url).pathname;
-//        const filename = dir + '/' + name.replace(/[^a-zA-Z0-9\.]+/g, '_');
-        const filename = dir + '/' + i + '.jpg';
-        request(url).pipe(fs.createWriteStream(filename));
-      }
-    },
-    function(err) {
-      console.log(err);
-    });
+// websocket
+const server = new ws({
+  port: 3000
+});
+
+server.on('connection', (ws) => {
+  console.log('...connected!');
+  ws.on('message', (message) => {
+    console.log('received');
+    getTweetImg(query)
+      .then(
+        function(data) {
+          const dir = createDir('img');
+          const filepath = {};
+          for (const i in Object.keys(data)) {
+            const url = data[i].url;
+            const filename = dir + '/' + i + '.jpg';
+            request(url).pipe(fs.createWriteStream(filename));
+            ws.send(filename, (err) => {});
+          }
+        },
+        function(err) {
+          console.log(err);
+        });
+  });
+  ws.on('close', () => {
+    console.log('disconnected');
+  })
+})
