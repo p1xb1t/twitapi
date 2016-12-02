@@ -1,0 +1,18 @@
+{
+  "name": "huistenbosch",
+  "version": "1.0.0",
+  "description": "",
+  "main": "casperjs.js",
+  "dependencies": {},
+  "devDependencies": {
+    "eslint": "^3.11.1",
+    "twitter": "^1.4.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node twitter.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
