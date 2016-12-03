@@ -22,6 +22,6 @@ Images named `[0-14].jpg` have been saved in `twitter_img`.
 
 ### Instagram
 
-`npm run instagram`
+`npm run insta`
 
 Images named `[0-19].jpg` have been saved in `insta_img`.
