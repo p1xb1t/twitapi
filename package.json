@@ -2,7 +2,7 @@
   "name": "huistenbosch",
   "version": "1.0.0",
   "description": "",
-  "main": "casperjs.js",
+  "main": "index.js",
   "dependencies": {},
   "devDependencies": {
     "eslint": "^3.11.1",
@@ -11,9 +11,10 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node twitter.js"
+    "twitter": "node twitter.js",
+    "insta": "node instagram.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "p1xb1t",
   "license": "ISC"
 }
