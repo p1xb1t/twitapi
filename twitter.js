@@ -1,40 +1,19 @@
 // require modules
-
-const fs = require('fs');
-const path = require('path');
-const request = require('request');
-const URL = require('url');
-const util = require('util');
+const common = require('./common_func');
 const ws = require('ws').Server;
 const tw = require('./twkey.js');
 
 // search word
 const query = process.argv[2] + ' filter:images exclude:retweets';
 
-// create directory
-function createDir(dir) {
-  const savedir = path.join(__dirname, dir, '/');
-  if (fs.existsSync(savedir)) {
-    const files = fs.readdirSync(savedir);
-    for (const file in files) {
-      if ({}.hasOwnProperty.call(files, file)) {
-        fs.unlinkSync(savedir + '/' + files[file]);
-      }
-    }
-  } else {
-    fs.mkdirSync(savedir);
-  }
-  return savedir;
-}
-
-// get tweets
-function getTweetImg(word) {
+// fetch tweets
+function fetchTweetImg(word) {
   return new Promise((resolve, reject) => {
     tw.get('search/tweets.json', {
       q: word,
       include_entities: 'true',
       tweet_mode: 'extended'
-    }, function(error, tweets, response) {
+    }, (error, tweets, response) => {
       if (!error) {
         const dataList = {};
         for (const i in tweets.statuses) {
@@ -44,7 +23,6 @@ function getTweetImg(word) {
           dataList[i] = data;
           // create JSON file
           // fs.writeFile('test2.json', JSON.stringify(dataList, null, '  '));
-
         }
         resolve(dataList);
       }
@@ -61,21 +39,21 @@ server.on('connection', (ws) => {
   console.log('...connected!');
   ws.on('message', (message) => {
     console.log('received');
-    getTweetImg(query)
-      .then(
-        function(data) {
-          const dir = createDir('img');
-          const filepath = {};
-          for (const i in Object.keys(data)) {
-            const url = data[i].url;
-            const filename = dir + '/' + i + '.jpg';
-            request(url).pipe(fs.createWriteStream(filename));
-            ws.send(filename, (err) => {});
-          }
-        },
-        function(err) {
-          console.log(err);
-        });
+    fetchTweetImg(query)
+      .then(function(data) {
+        common.getImg(data, 'twitter_img')
+          .then(function(path) {
+            const text = JSON.stringify(path);
+            ws.send(text, (err) => {});
+            console.log('sent');
+          })
+          .catch(function(err) {
+            console.log(err);
+          })
+      })
+      .catch(function(err) {
+        console.log(err);
+      });
   });
   ws.on('close', () => {
     console.log('disconnected');

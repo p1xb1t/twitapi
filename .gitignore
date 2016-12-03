@@ -1,4 +1,4 @@
 node_modules/
-img/
+*_img/
 .eslintrc.json
-twkey.js
+*key.js
