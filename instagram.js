@@ -1,12 +1,11 @@
 // require modules
 const common = require('./common_func');
-const fs = require('fs');
 const https = require('https');
 const ws = require('ws').Server;
 // API key
 const key = require('./igkey.js');
 
-const url = 'https://api.instagram.com/v1/users/11180556/media/recent?access_token=' + key;
+const url = 'https://api.instagram.com/v1/users/11180556/media/recent?access_token=' + key + '&count=15';
 
 function InstaAPI(url, callback) {
   https.get(url, (res) => {
@@ -20,7 +19,6 @@ function InstaAPI(url, callback) {
     res.on('end', (res) => {
       res = JSON.parse(body);
       callback(res);
-      //      fs.writeFile('ig.json', JSON.stringify(res, null, '   '));
     });
   }).on('error', (e) => {
     console.log(e.message);

@@ -21,8 +21,6 @@ function fetchTweetImg(word) {
             'url': tweets.statuses[i].entities.media[0].media_url
           };
           dataList[i] = data;
-          // create JSON file
-          // fs.writeFile('test2.json', JSON.stringify(dataList, null, '  '));
         }
         resolve(dataList);
       }
