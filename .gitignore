@@ -2,3 +2,4 @@ node_modules/
 *_img/
 .eslintrc.json
 *key.js
+scraping/
