@@ -22,14 +22,14 @@ function createDir(dir) {
 
 module.exports = {
   // save img from url
-  getImg: function(data, dirname) {
+  getImg(data, dirname) {
     return new Promise((resolve, reject) => {
       const dir = createDir(dirname);
       const filepath = {};
       for (const i in Object.keys(data)) {
         const url = data[i].url;
         const filename = dir + i + '.jpg';
-        request(url).pipe(fs.createWriteStream(filename));
+        request(url).pipe(fs.createWriteStream(filename)).on('error', (e) => {console.log(e);});
         filepath[i] = {
           path: filename
         }
